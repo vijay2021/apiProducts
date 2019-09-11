@@ -1,9 +1,5 @@
 <?php
 // required headers
-// required headers
-//header("Access-Control-Allow-Origin: http://localhost/rest-api-authentication-example/");
-//header("Content-Type: application/json; charset=UTF-8");
-
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
@@ -24,18 +20,12 @@ $db = $database->getConnection();
 $user = new User($db);
 
 
-
-
-
-
 // get posted data
 $data = json_decode(file_get_contents("php://input"));
  
 // set product property values
 $user->email = $data->email;
 $email_exists = $user->emailExists();
-
-
 
 
 // generate json web token
@@ -61,7 +51,6 @@ if($email_exists && (trim($data->password)==trim($user->password))){
            "id" => $user->id,
            "name" => $user->name,
            "email" => $user->email,
-           "password" => $user->password
        )
     );
  
@@ -70,6 +59,7 @@ if($email_exists && (trim($data->password)==trim($user->password))){
  
     // generate jwt
     $jwt = JWT::encode($token, $key);
+	setcookie("jwt", $jwt, time()+3600);
 	echo json_encode(
             array(
                 "message" => "Successful login.",

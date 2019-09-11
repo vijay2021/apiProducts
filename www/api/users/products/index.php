@@ -2,7 +2,7 @@
 // required headers
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Methods: GET,POST,DELETE");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
  
@@ -27,14 +27,16 @@ $db = $database->getConnection();
  
 // initialize object
 $product = new Product($db);
- 
-// read users will be here
-
+	
 // get posted data
-$data = json_decode(file_get_contents("php://input"));
- 
+$data = json_decode(file_get_contents("php://input")); 
 // get jwt
 $jwt=isset($data->jwt) ? $data->jwt : "";
+
+//if token is not available in body
+if(empty($jwt) && isset($_SERVER['HTTP_JWT'])){
+	$jwt = trim($_SERVER['HTTP_JWT']);
+}
  
 // decode jwt here
 
@@ -49,8 +51,8 @@ if($jwt){
         $decoded = JWT::decode($jwt, $key, array('HS256'));
  
         // set user property values here
-		
-		if(isset($_GET['sku']) && $_GET['sku']!=''){
+		// delete user product method with sku and id
+		if((isset($_GET['sku']) && $_GET['sku']!='') && $_SERVER['REQUEST_METHOD']=='DELETE'){
 			
 			$stmt = $product->deleteUserProduct($_GET['sku'],$decoded->data->id);
 			
@@ -63,15 +65,24 @@ if($jwt){
 					array("message" => "product successfully deleted.")
 				);
 				
+			}elseif($stmt==2){
+				// set response code - 200 OK
+				http_response_code(200);
+			 
+				// no product or sku wrong
+				echo json_encode(
+					array("message" => "product sku is not correct or sku not belongs to current user.")
+				);
+				
 			}else{
-				// set response code - 404 Not found
-				http_response_code(404);
+				// set response code - 200 Not found
+				http_response_code(200);
 			 
 				// tell the product no product found
 				echo json_encode(
 					array("message" => "product not deleted.")
 				);
-			}	
+			} 		
 		}else{
 		
 		
@@ -138,5 +149,3 @@ if($jwt){
 }
  
 // error message if jwt is empty will be here
-
-

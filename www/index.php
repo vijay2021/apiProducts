@@ -11,36 +11,16 @@
 </head>
 <body>
     <div class="container">
-    <?php echo "<h1>Hi! I'm happy</h1>"; ?>
-
-    <?php
-
-    // Connexion et sélection de la base
-    $conn = mysqli_connect('db', 'user', 'test', "myDb");
-
-
-    $query = 'SELECT * From Person';
-    $result = mysqli_query($conn, $query);
-
-    echo '<table class="table table-striped">';
-    echo '<thead><tr><th></th><th>id</th><th>name</th></tr></thead>';
-    while($value = $result->fetch_array(MYSQLI_ASSOC)){
-        echo '<tr>';
-        echo '<td><a href="#"><span class="glyphicon glyphicon-search"></span></a></td>';
-        foreach($value as $element){
-            echo '<td>' . $element . '</td>';
-        }
-
-        echo '</tr>';
-    }
-    echo '</table>';
-
-    /* Libération du jeu de résultats */
-    $result->close();
-
-    mysqli_close($conn);
-
-    ?>
-    </div>
+    <?php echo "<h1>Hi! Here we can find our rest api project.</h1>"; ?>
+	<h2>urls's  are here:</h2>
+	<ul>
+		<li>For all products: http://localhost:8001/api/products/</li>
+		<li>For Auth: http://localhost:8001/api/auth/</li>
+		<li>For Auth User: http://localhost:8001/api/users/</li>
+		<li>For Auth User Products GET Or POST: http://localhost:8001/api/users/products/ <b>here we have to send jwt value in header or body.</b></li>
+		<li>For Auth User Products Delete: http://localhost:8001/api/users/products/?sku=skuProduct</li>
+	
+	</ul>
+ </div>
 </body>
 </html>

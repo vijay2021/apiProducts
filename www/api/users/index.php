@@ -2,7 +2,7 @@
 // required headers
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Methods: GET,POST");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
  
@@ -36,6 +36,9 @@ $data = json_decode(file_get_contents("php://input"));
 // get jwt
 $jwt=isset($data->jwt) ? $data->jwt : "";
  
+if(empty($jwt) && isset($_SERVER['HTTP_JWT'])){
+	$jwt = trim($_SERVER['HTTP_JWT']);
+} 
 // decode jwt here
 
 
@@ -54,10 +57,7 @@ if($jwt){
 		 );
 		 
 		 echo json_encode($user_arr); 
-		// update user will be here
     }
- 
-    // catch failed decoding will be here
 	
 	// if decode fails, it means jwt is invalid
 	catch (Exception $e){
@@ -74,5 +74,3 @@ if($jwt){
 }
  
 // error message if jwt is empty will be here
-
-

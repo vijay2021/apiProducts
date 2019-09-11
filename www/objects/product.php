@@ -20,13 +20,12 @@ class Product{
 	 
 		// select all query
 		$query = "SELECT
-					p.sku, p.name,
+					p.sku, p.name
 				FROM
 					" . $this->table_name . " p
 				ORDER BY
 					p.name ASC";
-	 
-		// prepare query statement
+	 	// prepare query statement
 		$stmt = $this->conn->prepare($query);
 		$stmt->execute();
 		
@@ -59,17 +58,37 @@ class Product{
 	
 	// delete purchased products
 	function deleteUserProduct($sku,$userid){
+		
+		if($this->findUserProduct($sku,$userid)==1){
+			
+			$query = "DELETE from purchased p where p.product_sku='".$sku."' and p.user_id='".$userid."'";
+		 
+			// prepare query statement
+			$stmt = $this->conn->prepare($query);
+			if($stmt->execute()){
+				return 1;
+			}else{
+				return 0;
+			}
+		}else{
+			return 2;
+		}
+		
+		
+			
+	}
+	
+	// find product from sku and id
+	function findUserProduct($sku,$userid){
 	 
 		// select all query
-		$query = "DELETE from purchased p where p.product_sku='".$sku."' and p.user_id='".$userid."'";
+		$query = "SELECT p.product_sku from purchased p where p.product_sku='".$sku."' and p.user_id='".$userid."'";
 	 
 		// prepare query statement
 		$stmt = $this->conn->prepare($query);
-		if($stmt->execute()){
-			return 1;
-		}else{
-			return 0;
-		}
+		$stmt->execute();
+		
+		return $stmt->rowCount();
 	}
 }
 

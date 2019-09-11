@@ -3,7 +3,7 @@
 error_reporting(E_ALL);
  
 // set your default time-zone
-date_default_timezone_set('Asia/Manila');
+date_default_timezone_set('Europe/Berlin');
  
 // variables used for jwt
 $key = "example_key";
