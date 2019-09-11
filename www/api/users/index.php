@@ -2,7 +2,7 @@
 // required headers
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: GET,POST");
+header("Access-Control-Allow-Methods: GET");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
  
@@ -43,7 +43,7 @@ if(empty($jwt) && isset($_SERVER['HTTP_JWT'])){
 
 
 // if jwt is not empty
-if($jwt){
+if($jwt  && $_SERVER['REQUEST_METHOD']=='GET'){
  
     // if decode succeed, show user details
     try {
@@ -71,6 +71,13 @@ if($jwt){
 			"error" => $e->getMessage()
 		));
 	}
+}else{
+	
+	// show error message
+		echo json_encode(array(
+			"message" => "jwt token is empty or wrong method call.",
+			"status"=>http_response_code(401),
+		));
 }
  
 // error message if jwt is empty will be here

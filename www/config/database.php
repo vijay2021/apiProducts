@@ -3,7 +3,7 @@ class Database{
  
     // specify your own database credentials
     //please find host value from docker command - docker inspect mysql container id
-	private $host = "172.22.0.2";
+	private $host = "192.168.112.2";
     private $db_name = "myDb";
     private $username = "user";
     private $password = "test";

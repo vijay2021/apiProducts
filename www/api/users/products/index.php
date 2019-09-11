@@ -49,12 +49,15 @@ if($jwt){
  
         // decode jwt
         $decoded = JWT::decode($jwt, $key, array('HS256'));
- 
+		
+		if(isset($_SERVER['argv'][0]) && $_SERVER['argv'][0]!=''){
+			$sku = explode("=",$_SERVER['argv'][0]);
+		}
         // set user property values here
 		// delete user product method with sku and id
-		if((isset($_GET['sku']) && $_GET['sku']!='') && $_SERVER['REQUEST_METHOD']=='DELETE'){
+		if((isset($sku[1]) && $sku[1]!='') && $_SERVER['REQUEST_METHOD']=='DELETE'){
 			
-			$stmt = $product->deleteUserProduct($_GET['sku'],$decoded->data->id);
+			$stmt = $product->deleteUserProduct($sku[1],$decoded->data->id);
 			
 			if($stmt==1){
 				// set response code - 200 OK
@@ -62,28 +65,28 @@ if($jwt){
 			 
 				// show product data in json format
 				echo json_encode(
-					array("message" => "product successfully deleted.")
+					array("message" => "product successfully deleted.",'status'=>http_response_code(200))
 				);
 				
 			}elseif($stmt==2){
 				// set response code - 200 OK
-				http_response_code(200);
+				http_response_code(404);
 			 
 				// no product or sku wrong
 				echo json_encode(
-					array("message" => "product sku is not correct or sku not belongs to current user.")
+					array("message" => "product sku is not correct or sku not belongs to current user.",'status'=>http_response_code(404))
 				);
 				
 			}else{
 				// set response code - 200 Not found
-				http_response_code(200);
+				http_response_code(404);
 			 
 				// tell the product no product found
 				echo json_encode(
-					array("message" => "product not deleted.")
+					array("message" => "product not deleted.",'status'=>http_response_code(404))
 				);
 			} 		
-		}else{
+		}elseif($_SERVER['REQUEST_METHOD']=='POST' || $_SERVER['REQUEST_METHOD']=='GET'){
 		
 		
 			$stmt = $product->purchasedProduct($decoded->data->id);
@@ -94,7 +97,7 @@ if($jwt){
 			 
 				// product array
 				$product_arr=array();
-				$product_arr["records"]=array();
+				$product_arr=array();
 			 
 				// retrieve our table contents
 				// fetch() is faster than fetchAll()
@@ -109,7 +112,7 @@ if($jwt){
 						"name" => $name
 					);
 			 
-					array_push($product_arr["records"], $product_item);
+					array_push($product_arr, $product_item);
 				}
 			 
 				// set response code - 200 OK
@@ -124,9 +127,13 @@ if($jwt){
 			 
 				// tell the product no product found
 				echo json_encode(
-					array("message" => "No product found.")
+					array("message" => "No product found.",'status'=>http_response_code(404))
 				);
 			}
+		}else{
+			echo json_encode(
+					array("message" => "Wrong method call.",'status'=>http_response_code(404))
+				);
 		}
 		
 		 
@@ -143,7 +150,8 @@ if($jwt){
 		// show error message
 		echo json_encode(array(
 			"message" => "Access denied.",
-			"error" => $e->getMessage()
+			"error" => $e->getMessage(),
+			'status'=>http_response_code(401)
 		));
 	}
 }

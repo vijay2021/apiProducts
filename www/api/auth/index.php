@@ -40,7 +40,7 @@ use \Firebase\JWT\JWT;
 
 
 // check if email exists and if password is correct
-if($email_exists && (trim($data->password)==trim($user->password))){
+if($email_exists && (trim($data->password)==trim($user->password)) && $_SERVER['REQUEST_METHOD']=='POST'){
  
     $token = array(
        "iss" => $iss,
@@ -74,5 +74,5 @@ else{
     http_response_code(401);
  
     // tell the user login failed
-    echo json_encode(array("message" => "Login failed."));
+    echo json_encode(array("message" => "Login failed or wrong method called.",'status'=>http_response_code(401)));
 }

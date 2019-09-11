@@ -1,6 +1,7 @@
 <?php
 // required headers
 header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET");
 header("Content-Type: application/json; charset=UTF-8");
  
 // include database and object files
@@ -21,7 +22,7 @@ $stmt = $product->read();
 $num = $stmt->rowCount();
  
 // check if more than 0 record found
-if($num>0){
+if($num>0 && $_SERVER['REQUEST_METHOD']=='GET'){
  
     // product array
     $product_arr=array();
@@ -55,7 +56,7 @@ if($num>0){
  
     // tell the product no product found
     echo json_encode(
-        array("message" => "No product found.")
+        array("message" => "No product found or wrong request method.",'status'=>http_response_code(404))
     );
 }
  
